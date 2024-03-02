@@ -601,13 +601,18 @@ public class TerminalBridge implements VDUDisplay {
 		final int height = parent.getHeight();
 
 		// Something has gone wrong with our layout; we're 0 width or height!
-		if (width <= 0 || height <= 0)
+		if (width <= 0 || height <= 0){
+			Log.d("sizeChange", String.format("parent width %d height %d", width, height));
 			return;
+		}
+
 
 		ClipboardManager clipboard = (ClipboardManager) parent.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
 		keyListener.setClipboardManager(clipboard);
 
 		if (!forcedSize) {
+			Log.d("sizeChange", "Calculating buffer size");
+
 			// recalculate buffer size
 			int newColumns, newRows;
 
@@ -630,6 +635,7 @@ public class TerminalBridge implements VDUDisplay {
 			newBitmap = (bitmap.getWidth() != width || bitmap.getHeight() != height);
 
 		if (newBitmap) {
+			Log.d("sizeChange", "new bitmap");
 			discardBitmap();
 			bitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 			canvas.setBitmap(bitmap);
@@ -641,6 +647,7 @@ public class TerminalBridge implements VDUDisplay {
 
 		// Stroke the border of the terminal if the size is being forced;
 		if (forcedSize) {
+			Log.d("sizeChange", "forcedSize");
 			int borderX = (columns * charWidth) + 1;
 			int borderY = (rows * charHeight) + 1;
 

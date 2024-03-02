@@ -79,6 +79,7 @@ android {
 
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
 			testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg', 'proguard-tests.cfg'
+			signingConfig signingConfigs.debug
 
 			if (project.hasProperty('keystorePassword')) {
 				//noinspection GroovyAssignabilityCheck

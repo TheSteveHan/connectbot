@@ -1263,6 +1263,7 @@ public class ConsoleActivity extends AppCompatActivity implements BridgeDisconne
 			// and add our terminal view control, using index to place behind overlay
 			final TerminalView terminal = new TerminalView(container.getContext(), bridge, pager);
 			terminal.setId(R.id.terminal_view);
+			//terminal.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 			view.addView(terminal, 0);
 
 			// Tag the view with its bridge so it can be retrieved later.

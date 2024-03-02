@@ -48,6 +48,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -365,6 +366,7 @@ public class TerminalView extends FrameLayout implements FontSizeChangedListener
 
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		Log.d("sizeChange", String.format("w %d h %d oldw %d oldh %d" , w, h, oldw, oldh));
 		super.onSizeChanged(w, h, oldw, oldh);
 
 		bridge.parentChanged(this);

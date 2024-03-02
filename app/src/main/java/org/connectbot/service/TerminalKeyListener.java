@@ -32,7 +32,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import de.mud.terminal.VDUBuffer;
+import de.mud.terminal.VDUInput;
 import de.mud.terminal.vt320;
+
+import static android.view.KeyEvent.META_SHIFT_ON;
 
 /**
  * @author kenny
@@ -277,7 +280,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 
 			int derivedMetaState = event.getMetaState();
 			if ((ourMetaState & OUR_SHIFT_MASK) != 0)
-				derivedMetaState |= KeyEvent.META_SHIFT_ON;
+				derivedMetaState |= META_SHIFT_ON;
 			if ((ourMetaState & OUR_ALT_MASK) != 0)
 				derivedMetaState |= KeyEvent.META_ALT_ON;
 			if ((ourMetaState & OUR_CTRL_MASK) != 0)
@@ -289,7 +292,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 			}
 
 			// Test for modified numbers becoming function keys
-			if (shiftedNumbersAreFKeys && (derivedMetaState & KeyEvent.META_SHIFT_ON) != 0) {
+			if (shiftedNumbersAreFKeys && (derivedMetaState & META_SHIFT_ON) != 0) {
 				if (sendFunctionKey(keyCode))
 					return true;
 			}
@@ -301,7 +304,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 			// CTRL-SHIFT-C to copy.
 			if (keyCode == KeyEvent.KEYCODE_C
 					&& (derivedMetaState & HC_META_CTRL_ON) != 0
-					&& (derivedMetaState & KeyEvent.META_SHIFT_ON) != 0) {
+					&& (derivedMetaState & META_SHIFT_ON) != 0) {
 				bridge.copyCurrentSelection();
 				return true;
 			}
@@ -309,7 +312,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 			// CTRL-SHIFT-V to paste.
 			if (keyCode == KeyEvent.KEYCODE_V
 					&& (derivedMetaState & HC_META_CTRL_ON) != 0
-					&& (derivedMetaState & KeyEvent.META_SHIFT_ON) != 0
+					&& (derivedMetaState & META_SHIFT_ON) != 0
 					&& clipboard.hasText()) {
 				bridge.injectString(clipboard.getText().toString());
 				return true;
@@ -317,7 +320,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 
 			if ((keyCode == KeyEvent.KEYCODE_EQUALS
 					&& (derivedMetaState & HC_META_CTRL_ON) != 0
-					&& (derivedMetaState & KeyEvent.META_SHIFT_ON) != 0)
+					&& (derivedMetaState & META_SHIFT_ON) != 0)
 					|| (keyCode == KeyEvent.KEYCODE_PLUS
 					&& (derivedMetaState & HC_META_CTRL_ON) != 0)) {
 				bridge.increaseFontSize();
@@ -344,7 +347,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 			}
 
 			// Remove shift from the modifier state as it has already been used by getUnicodeChar.
-			derivedMetaState &= ~KeyEvent.META_SHIFT_ON;
+			derivedMetaState &= ~META_SHIFT_ON;
 
 			if ((uchar & KeyCharacterMap.COMBINING_ACCENT) != 0) {
 				mDeadKey = uchar & KeyCharacterMap.COMBINING_ACCENT_MASK;
@@ -369,6 +372,11 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 					bridge.transport.write(new String(Character.toChars(uchar))
 							.getBytes(encoding));
 				return true;
+			}
+			int modifierState  = 0;
+
+			if ((event.getMetaState() & META_SHIFT_ON) != 0){
+				modifierState |= VDUInput.KEY_SHIFT;
 			}
 
 			// look for special chars
@@ -413,7 +421,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 					bridge.redraw();
 				} else {
 					((vt320) buffer).keyPressed(vt320.KEY_LEFT, ' ',
-							getStateForBuffer());
+							modifierState);
 					bridge.tryKeyVibrate();
 				}
 				return true;
@@ -424,7 +432,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 					bridge.redraw();
 				} else {
 					((vt320) buffer).keyPressed(vt320.KEY_UP, ' ',
-							getStateForBuffer());
+							modifierState);
 					bridge.tryKeyVibrate();
 				}
 				return true;
@@ -435,7 +443,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 					bridge.redraw();
 				} else {
 					((vt320) buffer).keyPressed(vt320.KEY_DOWN, ' ',
-							getStateForBuffer());
+							modifierState);
 					bridge.tryKeyVibrate();
 				}
 				return true;
@@ -446,7 +454,7 @@ public class TerminalKeyListener implements OnKeyListener, OnSharedPreferenceCha
 					bridge.redraw();
 				} else {
 					((vt320) buffer).keyPressed(vt320.KEY_RIGHT, ' ',
-							getStateForBuffer());
+							modifierState);
 					bridge.tryKeyVibrate();
 				}
 				return true;

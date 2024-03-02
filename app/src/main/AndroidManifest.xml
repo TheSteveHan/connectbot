@@ -38,6 +38,7 @@
 		android:xlargeScreens="true" />
 
 	<application
+		android:hardwareAccelerated="false"
 		android:allowBackup="true"
 		android:backupAgent=".service.BackupAgent"
 		android:description="@string/app_desc"
